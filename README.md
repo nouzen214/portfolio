@@ -1,4 +1,4 @@
-# Lance Angelo Policarpio | Developer Portfolio
+# Lance Angelo Policarpio | Portfolio
 
 Personal developer portfolio for **Lance Angelo A. Policarpio** — Intern at **CloudSwyft Global Systems**, BS Information Technology student at University of Perpetual Help System Laguna (UPHSL), UI/UX Designer, and Unity Certified Artist.
 
