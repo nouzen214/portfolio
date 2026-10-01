@@ -1,9 +1,141 @@
 /**
  * Developer Portfolio Client-Side Engine
- * Lance Angelo A. Policarpio - Web Development Intern @ CloudSwyft & BSIT
+ * Lance Angelo A. Policarpio - Intern @ CloudSwyft & BSIT
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+
+  // =========================================================================
+  // A. CUSTOM CURSOR + SPOTLIGHT (A24-inspired)
+  // =========================================================================
+  const cursorDot      = document.getElementById('cursor-dot');
+  const cursorRing     = document.getElementById('cursor-ring');
+  const cursorSpot     = document.getElementById('cursor-spotlight');
+
+  let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+  let ringX  = mouseX, ringY  = mouseY;
+  let spotX  = mouseX, spotY  = mouseY;
+
+  // Raw mouse position (dot follows exactly)
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (cursorDot) {
+      cursorDot.style.left = mouseX + 'px';
+      cursorDot.style.top  = mouseY + 'px';
+    }
+    // Spotlight with slight lag
+    if (cursorSpot) {
+      cursorSpot.style.left = mouseX + 'px';
+      cursorSpot.style.top  = mouseY + 'px';
+    }
+  });
+
+  // Ring follows with easing via rAF
+  const animateRing = () => {
+    ringX += (mouseX - ringX) * 0.12;
+    ringY += (mouseY - ringY) * 0.12;
+    if (cursorRing) {
+      cursorRing.style.left = ringX + 'px';
+      cursorRing.style.top  = ringY + 'px';
+    }
+    requestAnimationFrame(animateRing);
+  };
+  animateRing();
+
+  // Hide cursor when leaving window
+  document.addEventListener('mouseleave', () => {
+    if (cursorDot)  cursorDot.style.opacity  = '0';
+    if (cursorRing) cursorRing.style.opacity = '0';
+  });
+  document.addEventListener('mouseenter', () => {
+    if (cursorDot)  cursorDot.style.opacity  = '1';
+    if (cursorRing) cursorRing.style.opacity = '1';
+  });
+
+  // =========================================================================
+  // B. KINETIC HERO TEXT (A24-inspired split-word entrance)
+  // =========================================================================
+  const kineticWords = document.querySelectorAll('.kinetic-word');
+  if (kineticWords.length > 0) {
+    kineticWords.forEach((word, i) => {
+      setTimeout(() => {
+        word.classList.add('animate');
+      }, 180 + i * 100);
+    });
+  }
+
+  // =========================================================================
+  // C. MAGNETIC BUTTON EFFECT (A24-inspired)
+  // =========================================================================
+  const magneticBtns = document.querySelectorAll('.magnetic-btn');
+  magneticBtns.forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+      const rect = btn.getBoundingClientRect();
+      const bx = e.clientX - rect.left - rect.width  / 2;
+      const by = e.clientY - rect.top  - rect.height / 2;
+      btn.style.transform = `translate(${bx * 0.28}px, ${by * 0.28}px)`;
+    });
+    btn.addEventListener('mouseleave', () => {
+      btn.style.transform = 'translate(0, 0)';
+    });
+  });
+
+  // =========================================================================
+  // D. PROJECT CARD CLIP-PATH WIPE (cursor position tracking)
+  // =========================================================================
+  const projectCards = document.querySelectorAll('.project-card');
+  projectCards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width)  * 100;
+      const y = ((e.clientY - rect.top)  / rect.height) * 100;
+      card.style.setProperty('--mx', x + '%');
+      card.style.setProperty('--my', y + '%');
+      // Also apply 3D tilt
+      const cx = e.clientX - rect.left - rect.width  / 2;
+      const cy = e.clientY - rect.top  - rect.height / 2;
+      const rotX = (cy / (rect.height / 2)) * -4;
+      const rotY = (cx / (rect.width  / 2)) *  4;
+      card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-6px)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+    });
+  });
+
+  // =========================================================================
+  // E. HEADING WIPE UNDERLINE (fires when section heading becomes visible)
+  // =========================================================================
+  const wipeHeadings = document.querySelectorAll('.heading-wipe');
+  if ('IntersectionObserver' in window && wipeHeadings.length > 0) {
+    const wipeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          wipeObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.6 });
+    wipeHeadings.forEach(h => wipeObserver.observe(h));
+  }
+
+  // =========================================================================
+  // F. TIMELINE ANIMATED LINE DRAW
+  // =========================================================================
+  const timelineContainers = document.querySelectorAll('.timeline-container');
+  if ('IntersectionObserver' in window && timelineContainers.length > 0) {
+    const tlObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          tlObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    timelineContainers.forEach(c => tlObserver.observe(c));
+  }
+
   // 1. Set current year in footer
   const yearSpan = document.getElementById('current-year');
   if (yearSpan) {
